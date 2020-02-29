@@ -192,9 +192,12 @@ def main():
     global total
     image=0
     os.system('cls')
-    print('Hey, this is a video review script that lets you quickly sort through a directory of vids and act on them\n')
-    print('This script requires that you set your copy of "VLC" as an Enviroment Variable\n\n')
-    direct=input('Enter the directory:\n')
+    print('Hi there and welcome to:\n')
+    if not os.path.exists('boot.artwork'): 
+        print('\n vid-reviewr.py \n')
+    else: 
+        with open('boot.artwork','r') as filehandle: print(filehandle.read(), '\n')
+    direct=input('Punch up a directory for us to look at:\n')
     os.system('cls')
     direct=clipper(direct)
     if not direct:

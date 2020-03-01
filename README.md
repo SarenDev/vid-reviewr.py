@@ -10,7 +10,7 @@ __   ___  __| |  ______   _ __ _____   ___  _____      ___ __       _ __  _   _
 ```
 ## vid-reviewr.py
 
-__*The script lets you go throught the directory and choose which videos to leave and which to delete.*__
+__*The script lets you go through the directory and choose which videos to leave and which to delete.*__
 
 **It might sound interesting already, but there are some extra features:**
 
@@ -20,3 +20,10 @@ __*The script lets you go throught the directory and choose which videos to leav
 * *That's basically it*... so far! Improvements to become available, maybe
 
 This is a first project type of deal, so quality isn't a guarantee... but then again, when is it ever?
+
+### Critical requirements:
+This script relies on VLC being installed on your machine and bein accessible from the command line 
+
+*(In Windows you have to set VLC's directory as an environmental path)*
+
+As for running it in Python, you'll ~~obviously~~ need Python installed and working from the command line as well as making sure Pip works too. The script uses the "send2trash" module so getting that out of the way will also be important.

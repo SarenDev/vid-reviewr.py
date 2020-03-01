@@ -1,5 +1,6 @@
 @echo off
-echo Testing Python and VLC environment variables, you'll see a window flash
+chcp 437 > NUL
+echo Testing for VLC, Python, Pip and it's imports
 timeout /t 1 > NUL
 cls
 echo ? VLC
@@ -18,12 +19,12 @@ if NOT ERRORLEVEL 1 (
 	echo ** ? "send2trash" Module
 	echo.
 	timeout /t 1 > NUL
-    where python > NUL
+	where python > NUL
 	if NOT ERRORLEVEL 1 (
 		cls
 		ver > NUL
 		echo √ VLC
-	    echo √ Python
+		echo √ Python
 		echo * ? Pip
 		echo ** ? "send2trash" Module
 		echo.
@@ -75,7 +76,7 @@ if NOT ERRORLEVEL 1 (
 		echo !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		echo.
 		echo √ VLC
-	    echo √ Python
+		echo √ Python
 		echo * X Pip
 		echo ** ? "send2trash" Module
 		echo.

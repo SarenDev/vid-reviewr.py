@@ -2,6 +2,8 @@
 # Proudly optimized by the one and only TrackLab - https://www.youtube.com/channel/UCxeUx7kNlG5iq-pJrDNKKKg
 #-----------------------------------------------------------------------------------------------------------------------------
 import os
+import subprocess
+import platform
 from time import sleep
 from send2trash import send2trash
 from datetime import datetime
@@ -10,16 +12,34 @@ total=0
 nuked=0
 skipped=0
 
-#Deals with the directory path
-def clipper(direct):       
-    if direct.startswith('"') and direct.endswith('"'):
-        direct=direct[1:-1] #Clip the quotes off of the directory listing
-    if direct.startswith('"') or direct.endswith('"'):
-        print('The path seems to have broken quotes, let\'s start over') #If the quotes are incomplete we should reset
-        return(False)
+def syscall(cause):
+    if platform.system()=='Linux':
+        if cause=='pause':
+            subprocess.run('read -n 1 -r -s -p "Press any key to continue..."', shell=True, executable='/bin/bash')
+        if cause=='cls':
+            subprocess.run('clear', shell=True, executable='/bin/bash')
+    elif platform.system()=='Windows':
+        if cause=='pause':
+            subprocess.run('pause', shell=True)
+        if cause=='cls':
+            subprocess.run('cls', shell=True)
     else:
-        pass #The user has already removed the quotes, all good to go
-    return(direct)
+        print('\n\n\nIt looks like this script is running on an incompatible OS. While we can\'t run the script for now, we probably will be able to do it soon!\n')
+        print('For now, we\'ll have to close down, it\'ll happen in a few seconds. Sorry about this...\n\n\n')
+        sleep(10)
+        
+        quit()
+
+#Deals with the directory path
+def clipper(direct):
+    rendirect=''
+    indc=0
+    if direct.endswith(' '): direct=direct[:-1]       
+    for symbl in direct:
+        if not symbl in ('"','\\',"'"):
+            rendirect=rendirect+symbl
+            indc+=1
+    return(rendirect)
 
 #Converts the items of the directory into a list
 def formatter(direct):
@@ -33,7 +53,7 @@ def formatter(direct):
 def imager(filelist,direct):
     print('----------\n')
     print('The purpose of this feature is to image a directory, so you don\'t have to go through all of it again at a later date\n')
-    pathway = direct+'\\Full_Image-'+str(datetime.date(datetime.now()))+'.list'
+    pathway = direct+'/Full_Image-'+str(datetime.date(datetime.now()))+'.list'
     if os.path.exists(pathway):
         answer=input('It looks like you already created an image today, would you like to overwrite it? Y/N\n')
         if answer in ("Y", "y"): pass
@@ -53,7 +73,7 @@ def reader(path,filelist):
     umcheck=len(filelist)
     if not os.path.exists(path):
           print('That\'s odd, we couldn\'t find the file '+path+'\n')
-          os.system('pause')
+          syscall('pause')
           return(False)
     with open(path,'r') as filehandle:      #Read the selected file into list
         for line in filehandle:
@@ -71,7 +91,7 @@ def reader(path,filelist):
             print('----------\n')
             print('This is bad, the autosave image we made failed our integrity check\n')
             print('We\'ll clean up and restart\n')
-            os.system('pause')
+            syscall('pause')
             os.remove(path)
             return(False)
         print('----------\n')
@@ -93,20 +113,20 @@ def reader(path,filelist):
                 return(False)
             else:
                 print('I didn\'t understand that, but I\'ll take it as a NO\n')
-                os.system('pause')
+                syscall('pause')
                 return(False)
         else:
             print('I didn\'t understand that, but I\'ll take it as a NO\n')
-            os.system('pause')
+            syscall('pause')
             return(False)
-    os.system('pause')
+    syscall('pause')
     return(outlist)
 
 #Finds images for use
 def loader(filelist,direct):
     listlist={}
     lcheck=0
-    os.system('cls')
+    syscall('cls')
     for item in os.listdir(direct):
         if item.endswith('.list'):
             listlist.update({lcheck:item})  #Look for image files and add them to dictionary
@@ -115,12 +135,12 @@ def loader(filelist,direct):
         print('The directory doesn\'t appear to contain a ".list" image file, you might want to find or create one before running this\n')
         if input('Would you like to create one now? Y/N\n') in ("Y", "y"):
             imager(filelist,direct)
-            os.system('pause')
+            syscall('pause')
             quit()
     print('Please choose an image file from the list bellow:\n')
     print(listlist)
     select=int(input())
-    path=direct+'\\'+listlist[select]   #Calls to read the image
+    path=direct+'/'+listlist[select]   #Calls to read the image
     outlist=reader(path,filelist)
     if not outlist: loader(filelist,direct)
     if outlist=='cont': return(False)
@@ -129,24 +149,24 @@ def loader(filelist,direct):
 #Plays and act on the files
 def player(origin,target,pointer):
     global total, nuked, skipped
-    os.system('cls')
-    if not os.path.exists(origin+'\\'+target):
+    syscall('cls')
+    if not os.path.exists(origin+'/'+target):
         print('That\'s odd, we couldn\'t find the file: '+target)
         sleep(1)
         return
     print ('Playing: '+target+' ||',pointer,'/',total)
-    command= 'vlc'+ ' --sout-all --sout #display' + ' "' + origin + '\\' + target + '"'
-    os.system(command)
+    command= 'vlc --quiet --sout-all --sout "#display"' + ' "' + origin + '/' + target + '"'
+    subprocess.call(command, shell=True, stdout=open(os.devnull,"w"), stderr=subprocess.STDOUT)
     answer = input('What would you like to do with this file?\n (D)elete | (S)kip | (R)eplay | (Q)uit\n')
     if answer in ("D", "d"):
         print('Deleted: '+target)
-        send2trash(origin+'\\'+target)
+        send2trash(origin+'/'+target)
         nuked+=1
         sleep(1)
         return
     elif answer in ("S", "s"):
         print('Skipped: '+target)
-        with open(origin+'\\temp.list', 'a') as filehandle:
+        with open(origin+'/temp.list', 'a') as filehandle:
             filehandle.write(target+'\n')
         skipped+=1
         sleep(1)
@@ -154,7 +174,7 @@ def player(origin,target,pointer):
     elif answer in ("R", "r"):
         print('Replaying: '+target)
         sleep(1)
-        player(origin, target)
+        player(origin, target, pointer)
     elif answer in ("Q", "q"):
         print('Ok, quitting...')
         sleep(1)
@@ -162,49 +182,48 @@ def player(origin,target,pointer):
     else:
         print('Something didn\'t go quite right, let\'s play'+target+' again')
         sleep(1)
-        player(origin, target)
+        player(origin, target, pointer)
 
 #Runs the player through all the files and deals with statistics as well as a graceful exit
 def player_call(files,direct):
     global total, nuked, skipped
     pointer=0
-    actlist=[]
     for item in files:
         pointer+=1
         player(direct, item, pointer)
-    os.system('cls')
-    os.remove(direct+'\\temp.list')
+    syscall('cls')
+    os.remove(direct+'/temp.list')
     print('You have reached the end of the directory, good job!\n')
     print('Let\'s look at some numbers:\n')
     print('----------\n')
-    print('You looked at',total,'files\n')
+    print('You looked at',total,'file(s)\n')
     print('----------\n')
-    print('Out of those you nuked',nuked,'files\n')
-    print('And spared',skipped,'files\n')
+    print('Out of those you nuked',nuked,'file(s)\n')
+    print('And spared',skipped,'file(s)\n')
     print('----------\n')
     print('We also imaged the directory for you convenience\n')
     imager(files,direct)
-    os.system('pause')
+    syscall('pause')
     quit()
 
 #The executive part
 def main():
     global total
     image=0
-    os.system('cls')
+    syscall('cls')
     print('Hi there and welcome to:\n')
-    if not os.path.exists('boot.artwork'): 
-        print('\n vid-reviewr.py \n')
+    if not os.path.exists(os.getcwd()+'/extras/boot.artwork'): 
+        print('\nvid-reviewr.py\n\n')
     else: 
-        with open('boot.artwork','r') as filehandle: print(filehandle.read(), '\n')
+        with open(os.getcwd()+'/extras/boot.artwork','r') as filehandle: print(filehandle.read(), '\n')
     direct=input('Punch up a directory for us to look at:\n')
-    os.system('cls')
+    syscall('cls')
     direct=clipper(direct)
     if not direct:
         main()
     if not os.path.exists(direct):
         print('The path you entered doesn\'t seem to be vaild, let\'s start over\n')
-        os.system('pause')
+        syscall('pause')
         main()
     print('Let\'s look at '+direct+'\n')
     print('----------\n')
@@ -214,31 +233,30 @@ def main():
         print('It doesn\'t have any videos we can work with\n')
         print('----------\n')
         print('Please pick another directory after this quick restart\n')
-        os.system('pause')
+        syscall('pause')
         main()
     print('It contains',total,'video(s)\n')
     for item in os.listdir(direct):
-        if item[-4]=='l':
+        if (item.endswith('.list') and not item.startswith('temp')):
             image+=1
-        else: pass
     if image!=0:
         print('It also conatins',image,'image(s) that you can load\n')
     print('----------\n')
-    if os.path.exists(direct+'\\temp.list'):
+    if os.path.exists(direct+'/temp.list'):
         print('It looks like the program was quit before you got through the directory\n')
         answer=input('Would you like to resume that list? Y/N\n')
         if answer in ("Y","y"):
-            filelistM=reader(direct+'\\temp.list', filelist)
+            filelistM=reader(direct+'/temp.list', filelist)
             if type(filelistM) is bool:main()
             total=total-(total-len(filelistM))
             player_call(filelistM,direct)
         elif answer in ("N", "n"):
             print('We cleaned up, sorry about the interruption\n')
-            os.remove(direct+'\\temp.list')
+            os.remove(direct+'/temp.list')
             print('----------\n')
         else:
             print('Something didn\'t go quite right, let\'s start over\n')
-            os.system('pause')
+            syscall('pause')
             main()
     print ('What would you like to do?\n')
     if image!=0: print('(R)ead an image |(C)ontinue | (I)mage the directory | (Q)uit\n')
@@ -246,16 +264,16 @@ def main():
     answer=input()
     if answer in ("I","i"):
         imager(filelist,direct)
-        os.system('pause')
+        syscall('pause')
         quit()
     elif answer in ("R","r"):
         filelistM=loader(filelist,direct)
         if not filelistM:
             player_call(filelist,direct)
         if len(filelistM)==0:
-            os.system('cls')
+            syscall('cls')
             print('It looks like nothing has changed since we imaged the directory. Let\'s call it a day\n')
-            os.system('pause')
+            syscall('pause')
             quit()
         total=total-(total-len(filelistM))
         player_call(filelistM,direct)
@@ -266,7 +284,7 @@ def main():
         sleep(1)
     else:
         print('Something didn\'t go quite right, let\'s start over\n')
-        os.system('pause')
+        syscall('pause')
         main()
 
 main()

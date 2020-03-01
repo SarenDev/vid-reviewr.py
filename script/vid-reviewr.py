@@ -36,9 +36,14 @@ def clipper(direct):
     indc=0
     if direct.endswith(' '): direct=direct[:-1]       
     for symbl in direct:
-        if not symbl in ('"','\\',"'"):
-            rendirect=rendirect+symbl
-            indc+=1
+        if platform.system()=='Linux':
+            if not symbl in ('"','\\',"'"):
+                rendirect=rendirect+symbl
+                indc+=1
+        else:
+            if not symbl in ('"',"'"):
+                rendirect=rendirect+symbl
+                indc+=1
     return(rendirect)
 
 #Converts the items of the directory into a list
@@ -259,7 +264,7 @@ def main():
             syscall('pause')
             main()
     print ('What would you like to do?\n')
-    if image!=0: print('(R)ead an image |(C)ontinue | (I)mage the directory | (Q)uit\n')
+    if image!=0: print('(R)ead an image | (C)ontinue | (I)mage the directory | (Q)uit\n')
     else: print('(C)ontinue | (I)mage the directory | (Q)uit\n')
     answer=input()
     if answer in ("I","i"):

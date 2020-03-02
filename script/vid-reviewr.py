@@ -147,8 +147,6 @@ def loader(filelist,direct):
     select=int(input())
     path=direct+'/'+listlist[select]   #Calls to read the image
     outlist=reader(path,filelist)
-    if not outlist: loader(filelist,direct)
-    if outlist=='cont': return(False)
     return outlist
 
 #Plays and act on the files
@@ -217,10 +215,7 @@ def main():
     image=0
     syscall('cls')
     print('Hi there and welcome to:\n')
-    if not os.path.exists(os.getcwd()+'/extras/boot.artwork'): 
-        print('\nvid-reviewr.py\n\n')
-    else: 
-        with open(os.getcwd()+'/extras/boot.artwork','r') as filehandle: print(filehandle.read(), '\n')
+    with open('boot.artwork','r') as filehandle: print(filehandle.read(), '\n')
     direct=input('Punch up a directory for us to look at:\n')
     syscall('cls')
     direct=clipper(direct)
@@ -273,7 +268,7 @@ def main():
         quit()
     elif answer in ("R","r"):
         filelistM=loader(filelist,direct)
-        if not filelistM:
+        if filelistM==False:
             player_call(filelist,direct)
         if len(filelistM)==0:
             syscall('cls')

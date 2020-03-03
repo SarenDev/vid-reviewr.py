@@ -8,7 +8,6 @@ echo ? Python
 echo * ? Pip
 echo ** ? "send2trash" Module
 echo.
-timeout /t 1 > NUL
 where vlc > NUL
 if NOT ERRORLEVEL 1 (
 	cls
@@ -18,7 +17,6 @@ if NOT ERRORLEVEL 1 (
 	echo * ? Pip
 	echo ** ? "send2trash" Module
 	echo.
-	timeout /t 1 > NUL
 	where python > NUL
 	if NOT ERRORLEVEL 1 (
 		cls
@@ -28,7 +26,6 @@ if NOT ERRORLEVEL 1 (
 		echo * ? Pip
 		echo ** ? "send2trash" Module
 		echo.
-		timeout /t 1 > NUL
 		where pip > NUL
 		if NOT ERRORLEVEL 1 (
 			cls
@@ -38,7 +35,6 @@ if NOT ERRORLEVEL 1 (
 			echo * ✓ Pip
 			echo ** ? "send2trash" Module
 			echo.
-			timeout /t 1 > NUL
 			pip search send2trash | findstr INSTALLED > NUL
 			if NOT ERRORLEVEL 1 (
 				cls

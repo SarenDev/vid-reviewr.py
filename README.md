@@ -29,4 +29,4 @@ This script relies on VLC being installed on your machine and being accessible f
 As for running it in Python, you'll ~~obviously~~ need Python installed and working from the command line as well as making sure Pip works too. The script uses the "send2trash" module so getting that out of the way will also be important.
 
 ### For potential contributors or those who want to live on the edge:
-Simply clone, fork or warily observe the "beta-bekr" branch. If it gets to unstable for you, fall back to the safety of "master"
+Simply clone, fork or warily observe the "beta-bekr" branch. If it gets too unstable for you, fall back to the safety of "master"

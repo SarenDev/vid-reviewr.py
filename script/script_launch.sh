@@ -7,28 +7,24 @@ printf "? VLC\n"
 printf "? Python\n"
 printf "* ? Pip\n"
 printf "** ? 'send2trash' Module\n"
-sleep 1
 if hash vlc 2>/dev/null; then
 	clear
 	printf "✓ VLC\n"
 	printf "? Python\n"
 	printf "* ? Pip\n"
 	printf "** ? 'send2trash' Module\n"
-	sleep 1
 	if hash python3 2>/dev/null; then
 		clear
 		printf "✓ VLC\n"
 		printf "✓ Python\n"
 		printf "* ? Pip\n"
 		printf "** ? 'send2trash' Module\n"
-		sleep 1
 		if hash pip3 2>/dev/null; then
 			clear
 			printf "✓ VLC\n"
 			printf "✓ Python\n"
 			printf "* ✓ Pip\n"
 			printf "** ? 'send2trash' Module\n"
-			sleep 1
 			if pip3 search send2trash | grep -q 'INSTALLED'; then
 				clear
 				printf "✓ VLC\n"
@@ -37,7 +33,7 @@ if hash vlc 2>/dev/null; then
 				printf "** ✓ 'send2trash' Module\n"
 				printf "Everything seems to be working, running script and closing this window in a bit"
 				python3 vid-reviewr.py
-				sleep 1
+				sleep 3
 				exit
 			else
 				clear 

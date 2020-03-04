@@ -1,16 +1,19 @@
-import random, sys
+import random, sys, getpass
 from time import sleep
 
-def print_lines():
+def credts():
     lines = ["That one script that let's you review videos",
          "Written, concepted, tested by:",
          "Saren Dev - https://github.com/SarenDev",
          "---AND---",
-         "Proudly optimized by the one and only...",
+         'Proudly optimized by the "one and only":',
          "TrackLab - https://github.com/TrackLab",
          "---FINALLY---",
          "Checked out and maybe improved by...",
-         "! YOU !"]
+         getpass.getuser()]
+    with open("features/boot.artwork","r") as filehandle: 
+            print(filehandle.read(), "\n")
+            filehandle.close()
     for line in lines:
         print("\n")
         for letter in line:
@@ -19,17 +22,8 @@ def print_lines():
             sleep(0.05)
     print("\n")
     return
-        
-
-def credts():
-    with open("features/boot.artwork","r") as filehandle: 
-            print(filehandle.read(), "\n")
-            filehandle.close()
-    print_lines()
-    return
 
 def texter(text):
-    active=[]
 
     incomp="\n\n\nSomething seem to have gone awry in the world of compatibility, but fret not, for we will fix it soon\nFor now, we'll have to close down, it'll happen in a few seconds. Sorry about this...\n\n\n"
 
@@ -41,14 +35,10 @@ def texter(text):
 
     uns_no=["I didn't understand that, but I'll take it as a NO\n", "I might need a bit to decode that, but for now let's say it's a NO\n"]
 
-    if text=="credits": 
-        credts()
-        return
+    if text=="credits": return(credts())
     if text=="incomp": return(incomp)
     if text=="unkerr": active=unkerr
     if text=="filemiss": active=filemiss
     if text=="uns_yes": active=uns_yes
     if text=="uns_no": active=uns_no
-    choice=random.randint(0,(len(active)-1))
-    return(active[choice])
-    
+    return(active[random.randint(0,(len(active)-1))])

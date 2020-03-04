@@ -30,3 +30,4 @@ As for running it in Python, you'll ~~obviously~~ need Python installed and work
 
 ### For potential contributors or those who want to live on the edge:
 Simply clone, fork or warily observe the "beta-bekr" branch. If it gets too unstable for you, fall back to the safety of "master"
+*If "beta-bekr is missing, nothing new is brewin' so just use good-ole "master"*

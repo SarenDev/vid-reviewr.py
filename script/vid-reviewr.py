@@ -21,17 +21,11 @@ skipped=0
 #Deals with the directory path
 def clipper(direct):
     rendirect=""
-    indc=0
+    delchar=["'",'"']
+    if platform.system()=="Linux": delchar.append("\\")
     if direct.endswith(" "): direct=direct[:-1]       
     for symbl in direct:
-        if platform.system()=="Linux":
-            if not symbl in ("'","\\",'"'):
-                rendirect=rendirect+symbl
-                indc+=1
-        else:
-            if not symbl in ('"',"'"):
-                rendirect=rendirect+symbl
-                indc+=1
+        if not symbl in delchar: rendirect=rendirect+symbl
     return(rendirect)
 
 #Converts the items of the directory into a list
@@ -111,22 +105,20 @@ def main():
     image=0
     syscall("cls")
     print("Hi there and welcome to:\n")
-    if not os.path.exists(os.getcwd()+"/features/boot.artwork"):
-        print("[A logo-free]\nv i d - r e v i e w r . p y")
+    if not os.path.exists(os.getcwd()+"/features/boot.artwork"): print("[A logo-free]\nv i d - r e v i e w r . p y\n")
     else:
         with open("features/boot.artwork","r") as filehandle: 
             print(filehandle.read(), "\n")
             filehandle.close()
-    direct=input("Punch up a directory for us to look at:\n")
+    direct=input("Punch up a directory for us to look at (or type 'Q' if you changed your mind):\n")
+    if direct in ("Q","q"): quit()
     syscall("cls")
     if direct=="c": 
-        syscall("cls")
         texter("credits")
         syscall("pause")
         main()
     direct=clipper(direct)
-    if not direct:
-        main()
+    if not direct: main()
     if not os.path.exists(direct):
         print("The path you entered doesn't seem to be vaild, let's start over\n")
         syscall("pause")
@@ -143,8 +135,7 @@ def main():
         main()
     print("It contains",total,"video(s)\n")
     for item in os.listdir(direct):
-        if (item.endswith(".list") and not item.startswith("temp")):
-            image+=1
+        if (item.endswith(".list") and not item.startswith("temp")): image+=1
     if image!=0:
         print("It also conatins",image,"image(s) that you can load\n")
     print("----------\n")
@@ -153,7 +144,7 @@ def main():
         answer=input("Would you like to resume that list? Y/N\n")
         if answer in ("Y","y"):
             filelistM=imaging.reader(direct+"/temp.list", filelist)
-            if type(filelistM) is bool:main()
+            if type(filelistM) is bool: main()
             total=total-(total-len(filelistM))      #Run recovery from temp.list
             player_call(filelistM,direct)
         elif answer in ("N", "n"):
@@ -162,28 +153,28 @@ def main():
             print("----------\n")
         else:
             print(texter("unkerr"))
-            syscall("pause")
+            sleep(3)
             main()
     print ("What would you like to do?\n")
-    if image!=0: print("(R)ead an image | (C)ontinue | (I)mage the directory | (Q)uit\n")
-    else: print("(C)ontinue | (I)mage the directory | (Q)uit\n")
+    if image!=0: print("(O)pen an image | (S)tart | (C)reate an image of the directory | (Q)uit\n")
+    else: print("(S)tart | (I)mage the directory | (Q)uit\n")
     answer=input()
-    if answer in ("I","i"):
+    if answer in ("C","c"):
         imaging.imager(filelist,direct)
         syscall("pause")
         quit()
-    elif answer in ("R","r"):
+    elif answer in ("O","o"):
         filelistM=imaging.loader(filelist,direct)
         if filelistM==False:
             player_call(filelist,direct)
         if len(filelistM)==0:
             syscall("cls")
-            print("It looks like nothing has changed since we imaged the directory. Let's call it a day\n")
+            print("It looks like nothing was added since we imaged the directory. Let's call it a day\n\n")
             syscall("pause")
             quit()
         total=total-(total-len(filelistM))
         player_call(filelistM,direct)
-    elif answer in ("C","c"):
+    elif answer in ("S","s"):
         player_call(filelist,direct)
     elif answer in ("Q","q"):
         print("Ok, quitting...")
@@ -193,9 +184,8 @@ def main():
         syscall("pause")
         main()
     else:
-        syscall("cls")
         print(texter("unkerr"))
-        syscall("pause")
+        sleep(3)
         main()
 
 main()

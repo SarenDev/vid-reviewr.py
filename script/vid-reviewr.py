@@ -52,7 +52,8 @@ def player(origin,target,pointer):
     answer = input("What would you like to do with this file?\n (D)elete | (S)kip | (R)eplay | (Q)uit\n")
     if answer in ("D", "d"):
         print("Deleted: "+target)
-        send2trash(origin+"/"+target)
+        if platform.system()=="Linux": send2trash(origin+"/"+target)
+        else: send2trash(origin+"\\"+target)
         nuked+=1
         sleep(1)
         return

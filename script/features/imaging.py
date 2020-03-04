@@ -38,8 +38,7 @@ def reader(path,filelist):
         if item in imglist:                #Compare and create new list, preforms an integrity check
             umcheck-=1
             pass
-        else:
-            outlist.append(item)
+        else: outlist.append(item)
     print("Image read!\n\n")
     if umcheck==len(filelist):
         if path.endswith("temp.list"):
@@ -52,11 +51,10 @@ def reader(path,filelist):
         print("----------\n")
         print("This is bad...\n"+"The image you loaded failed our integrity check\n")
         print("It could be that the file you're using is unbelievably old, came from another directory or is corrupted\n")
-        print("Are you sure you want to continue with this image file? If you do - the list might have. Y/N\n")
+        print("Are you sure you want to continue with this image file? If you do - you might have to go through some files again. Y/N\n")
         print("----------\n")
         answer=input()
-        if answer in ("Y","y"):
-            return(True)
+        if answer in ("Y","y"): return(True)
         elif answer in ("N","n"):
             answer=input("Would you like us to delete this file and quit? Y/N\n")
             if answer in ("Y", "y"):
@@ -64,8 +62,7 @@ def reader(path,filelist):
                 os.remove(path)
                 sleep(1)
                 quit()
-            elif answer in ("N", "n"):
-                return(False)
+            elif answer in ("N", "n"): return(False)
             else:
                 print(texter("uns_no"))
                 syscall("pause")
@@ -92,9 +89,27 @@ def loader(filelist,direct):
             imager(filelist,direct)
             syscall("pause")
             quit()
-    print("Please choose an image file from the list bellow:\n")
+    print("Please choose an image file from the list bellow (or type 'Q' if you changed your mind):\n")
     print(listlist)
-    select=int(input())
-    path=direct+"/"+listlist[select]   #Calls to read the image
-    outlist=reader(path,filelist)
-    return outlist
+    select=input()
+    if select in ("Q", "q"): quit()
+    try:
+        select=int(select)
+        path=direct+"/"+listlist[select]   
+    except: 
+        print("It looks like you selected an invalid image, please try again after we trip a quick restart\n")
+        syscall("pause")
+        loader(filelist,direct)
+    answer=input("What would you like to do with the image "+listlist[select]+"? (U)se or (D)elete\n")
+    if answer in ("U", "u"):
+        outlist=reader(path,filelist) #Calls to read the image
+        return outlist
+    elif answer in ("D", "d"):
+        os.remove(path)
+        print("Erased",listlist[select],"\n")
+        syscall("pause")
+        quit()
+    else:
+        print(texter("unkerr"))
+        syscall("pause")
+        loader(filelist,direct)

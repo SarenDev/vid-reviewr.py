@@ -1,22 +1,28 @@
+total=0
+nuked=0
+skipped=0
+classic=False
 import os
 import subprocess
 import platform
 from time import sleep
 from send2trash import send2trash
-try:
-    from features.texts import texter
-    from features import imaging            #Attempt to import files from /features
-    from features.syscall import syscall
+try: from features.backstrings import texter,syscall
 except:
-    print("I'm afaid this must end here\n\n")
-    print("Since you are missing the /features directory, that contains critical files, we have to quit\n")
-    print("It's not you, it's us. Since the script will crash if those files go away")
+    print("I'm sorry, we can't continue...")
+    print("'vid-reviewr.py' is designed to be somewhat modular, but this is a bit much")
+    print("The '/features' directory needs to contain 'backstrings.py' for the script to run")
+    print("Since without the script will crash, we have to quit right now")
     sleep(10)
     quit()
+try: from features import imaging
+except: classic=True
 
-total=0
-nuked=0
-skipped=0
+def classic_fault():
+    syscall("cls")
+    print("This feature isn't available in classic mode, sorry")
+    sleep(5)
+    main()
 
 #Deals with the directory path
 def clipper(direct):
@@ -35,8 +41,6 @@ def formatter(direct):
         if item.endswith(".mp4") or item.endswith(".mkv"):
             filelist.append(item)   #Only adding ".mp4" or ".mkv" files to the list
     return(filelist)
-
-
 
 #Plays and act on the files
 def player(origin,target,pointer):
@@ -87,30 +91,36 @@ def player_call(files,direct):
         player(direct, item, pointer)
     syscall("cls")
     os.remove(direct+"/temp.list")
-    print("You have reached the end of the directory, good job!\n")
-    print("Let's look at some numbers:\n")
+    print("You have reached the end of the directory, good job!")
+    print("Let's look at some numbers:")
     print("----------\n")
-    print("You looked at",total,"file(s)\n")
+    print("You looked at",total,"file(s)")
     print("----------\n")
-    print("Out of those you nuked",nuked,"file(s)\n")
-    print("And spared",skipped,"file(s)\n")
+    print("Out of those you nuked",nuked,"file(s)")
+    print("And spared",skipped,"file(s)")
     print("----------\n")
-    print("We also imaged the directory for you convenience\n")
-    imaging.imager(files,direct)
+    try: 
+        imaging.imager(files,direct)
+        print("I also imaged the directory for you convenience\n")
+    except: pass
     syscall("pause")
     quit()
 
 #The executive part
 def main():
-    global total
+    global total, classic
     image=0
     syscall("cls")
-    print("Hi there and welcome to:\n")
-    if not os.path.exists(os.getcwd()+"/features/boot.artwork"): print("[A logo-free]\nv i d - r e v i e w r . p y\n")
+    print("Hi there and welcome to:")
+    if not os.path.exists(os.getcwd()+"/features/boot.artwork"): print("\n[A logo-free]\nv i d - r e v i e w r . p y\n")
     else:
         with open("features/boot.artwork","r") as filehandle: 
             print(filehandle.read(), "\n")
             filehandle.close()
+    if classic: 
+        print("-"*27)
+        print("Now running in CLASSIC MODE")
+        print("-"*27)
     direct=input("Punch up a directory for us to look at (or type 'Q' if you changed your mind):\n")
     if direct in ("Q","q"): quit()
     syscall("cls")
@@ -124,24 +134,29 @@ def main():
         print("The path you entered doesn't seem to be vaild, let's start over\n")
         syscall("pause")
         main()
-    print("Let's look at "+direct+"\n")
-    print("----------\n")
+    print("Let's look at "+direct)
+    print("-"*(14+len(direct)))
     filelist=formatter(direct)
     total=len(filelist)
     if total==0:
-        print("It doesn't have any videos we can work with\n")
-        print("----------\n")
+        print("It doesn't have any videos I can work with")
+        print("-"*43)
         print("Please pick another directory after this quick restart\n")
         syscall("pause")
         main()
-    print("It contains",total,"video(s)\n")
+    print("\nIt contains",total,"video(s)")
     for item in os.listdir(direct):
         if (item.endswith(".list") and not item.startswith("temp")): image+=1
     if image!=0:
         print("It also conatins",image,"image(s) that you can load\n")
-    print("----------\n")
+        print("-"*(44+len(str(image))))
+    else: print("-"*(21+len(str(image))))
     if os.path.exists(direct+"/temp.list"):
-        print("It looks like the program was quit before you got through the directory\n")
+        if classic:
+            print("I ran into problems with an Autosave image")
+            os.remove(direct+"/temp.list")
+            classic_fault()
+        print("It looks like the program was quit before you got through the directory")
         answer=input("Would you like to resume that list? Y/N\n")
         if answer in ("Y","y"):
             filelistM=imaging.reader(direct+"/temp.list", filelist)
@@ -149,22 +164,29 @@ def main():
             total=total-(total-len(filelistM))      #Run recovery from temp.list
             player_call(filelistM,direct)
         elif answer in ("N", "n"):
-            print("We cleaned up, sorry about the interruption\n")
+            print("I cleaned up, sorry about the interruption\n")
             os.remove(direct+"/temp.list")
-            print("----------\n")
+            print("-"*43)
         else:
             print(texter("unkerr"))
             sleep(3)
             main()
     print ("What would you like to do?\n")
-    if image!=0: print("(O)pen an image | (S)tart | (C)reate an image of the directory | (Q)uit\n")
-    else: print("(S)tart | (I)mage the directory | (Q)uit\n")
+    if classic: 
+        print("-"*99)
+        print("Since we're running in Classic Mode, because 'backstrings.py' isn't here, some feature are missing")
+        print("-"*99)
+        print("(S)tart | (Q)uit\n")
+    elif image!=0: print("(O)pen an image | (S)tart | (C)reate an image of the directory | (Q)uit\n")
+    else: print("(S)tart | (C)reate an image of the directory | (Q)uit\n")
     answer=input()
     if answer in ("C","c"):
+        if classic: classic_fault()
         imaging.imager(filelist,direct)
         syscall("pause")
         quit()
     elif answer in ("O","o"):
+        if classic: classic_fault()
         filelistM=imaging.loader(filelist,direct)
         if filelistM==False:
             player_call(filelist,direct)
@@ -188,5 +210,4 @@ def main():
         print(texter("unkerr"))
         sleep(3)
         main()
-
 main()

@@ -10,13 +10,13 @@ __   ___  __| |  ______   _ __ _____   ___  _____      ___ __       _ __  _   _
 ```
 ## vid-reviewr.py
 
-__*The script lets you go through the directory and choose which videos to leave and which to delete.*__
+__*The script lets you go through the directory and choose which videos to leave or delete.*__
 
 **It might sound useful already, but wait - there are some extra features:**
 
-* *Progress autosave*, to never lose progress if the you or app quits
+* *Autosave*, so that progress isn't lost if the app quits, or you decide to take a break
 * *Manual save*, so that you don't have to go through a directory all over again; Instead, just look at the new files
-* *Somewhat useful script launcher*, for those who want to run it as it was intended, in good old Python
+* *Somewhat useful script launcher*, for those who want to run it in Python and need a tip when setting up
 * *Review-and-edit-friendly code structure*, while not a feature per say it is just good organization
 * *Extra bits for code reviewers and regular users*, be on the lookout
 

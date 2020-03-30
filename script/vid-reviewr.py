@@ -97,10 +97,10 @@ def player_call(files,direct):
     except:pass
     if size_m>1024: 
         size_m=round(size_m/1024)
+        mettype="GB"
         if size_m>1024:
             size_m=round(size_m/1024)
             mettype="TB"
-        mettype="GB"
     print("You have reached the end of the directory, good job!")
     print("Let's look at some numbers:")
     print("----------\n")

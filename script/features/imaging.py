@@ -1,8 +1,7 @@
 from datetime import datetime
 import os
 from time import sleep
-from .texts import texter
-from .syscall import syscall
+from .backstrings import texter,syscall
 
 #Images the file list in its current state
 def imager(filelist,direct):

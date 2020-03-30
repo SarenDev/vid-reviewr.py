@@ -1,6 +1,7 @@
 total=0
 nuked=0
 skipped=0
+size_m=0
 classic=False
 import os
 import subprocess
@@ -44,7 +45,7 @@ def formatter(direct):
 
 #Plays and act on the files
 def player(origin,target,pointer):
-    global total, nuked, skipped
+    global total, nuked, skipped, size_m
     syscall("cls")
     if not os.path.exists(origin+"/"+target):
         print(texter("filemiss")+target)
@@ -56,6 +57,7 @@ def player(origin,target,pointer):
     answer = input("What would you like to do with this file?\n (D)elete | (S)kip | (R)eplay | (Q)uit\n")
     if answer in ("D", "d"):
         print("Deleted: "+target)
+        size_m+=round((os.stat(origin+"/"+target).st_size)/(1024 * 1024))
         if platform.system()=="Linux": send2trash(origin+"/"+target)
         else: send2trash(origin+"\\"+target)
         nuked+=1
@@ -84,13 +86,21 @@ def player(origin,target,pointer):
 
 #Runs the player through all the files and deals with statistics as well as a graceful exit
 def player_call(files,direct):
-    global total, nuked, skipped
+    global total, nuked, skipped, size_m
     pointer=0
+    mettype="MB"
     for item in files:
         pointer+=1
         player(direct, item, pointer)
     syscall("cls")
-    os.remove(direct+"/temp.list")
+    try:os.remove(direct+"/temp.list")
+    except:pass
+    if size_m>1024: 
+        size_m=round(size_m/1024)
+        if size_m>1024:
+            size_m=round(size_m/1024)
+            mettype="TB"
+        mettype="GB"
     print("You have reached the end of the directory, good job!")
     print("Let's look at some numbers:")
     print("----------\n")
@@ -99,10 +109,10 @@ def player_call(files,direct):
     print("Out of those you nuked",nuked,"file(s)")
     print("And spared",skipped,"file(s)")
     print("----------\n")
-    try: 
-        imaging.imager(files,direct)
-        print("I also imaged the directory for you convenience\n")
-    except: pass
+    print("That's",str(size_m)+mettype,"of storage savings!")
+    print("----------\n")
+    try:imaging.imager(files,direct)
+    except:pass
     syscall("pause")
     quit()
 

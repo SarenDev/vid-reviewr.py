@@ -44,14 +44,14 @@ def formatter(direct):
     return(filelist)
 
 #Plays and act on the files
-def player(origin,target,pointer):
+def player(origin,target,pointer,pointd):
     global total, nuked, skipped, size_m
     syscall("cls")
     if not os.path.exists(origin+"/"+target):
         print(texter("filemiss")+target)
         sleep(1)
         return
-    print ("Playing: "+target+" ||",pointer,"/",total)
+    print ("Playing: "+target+" ||",pointd,"/",total)
     command= 'vlc --quiet --sout-all --sout "#display"' + ' "' + origin + '/' + target + '"'
     subprocess.call(command, shell=True, stdout=open(os.devnull,"w"), stderr=subprocess.STDOUT)
     answer = input("What would you like to do with this file?\n (D)elete | (S)kip | (R)eplay | (Q)uit\n")
@@ -61,6 +61,9 @@ def player(origin,target,pointer):
         if platform.system()=="Linux": send2trash(origin+"/"+target)
         else: send2trash(origin+"\\"+target)
         nuked+=1
+        with open(origin+"/temp.stat", "w") as filehandle:
+            filehandle.write(str(total)+"\n"+str(nuked)+"\n"+str(skipped)+"\n"+str(size_m)+"\n")
+            filehandle.close()
         sleep(1)
         return
     elif answer in ("S", "s"):
@@ -69,6 +72,9 @@ def player(origin,target,pointer):
             filehandle.write(target+"\n")
             filehandle.close()
         skipped+=1
+        with open(origin+"/temp.stat", "w") as filehandle:
+            filehandle.write(str(total)+"\n"+str(nuked)+"\n"+str(skipped)+"\n"+str(size_m)+"\n")
+            filehandle.close()
         sleep(1)
         return
     elif answer in ("R", "r"):
@@ -85,15 +91,21 @@ def player(origin,target,pointer):
         player(origin, target, pointer)
 
 #Runs the player through all the files and deals with statistics as well as a graceful exit
-def player_call(files,direct):
+def player_call(files,direct,pointd):
     global total, nuked, skipped, size_m
     pointer=0
     mettype="MB"
     for item in files:
         pointer+=1
-        player(direct, item, pointer)
+        pointd+=1
+        player(direct, item, pointer, pointd)
+        with open(direct+"/temp.stat", "a") as filehandle: #Calling player, while passing display values loaded from file (if it happened)
+            filehandle.write(str(pointd))
+            filehandle.close()
     syscall("cls")
     try:os.remove(direct+"/temp.list")
+    except:pass
+    try:os.remove(direct+"/temp.stat")
     except:pass
     if size_m>1024: 
         size_m=round(size_m/1024)
@@ -104,10 +116,10 @@ def player_call(files,direct):
     print("You have reached the end of the directory, good job!")
     print("Let's look at some numbers:")
     print("----------\n")
-    print("You looked at",total,"file(s)")
+    print("You",texter("total"),total,"file(s)")
     print("----------\n")
-    print("Out of those you nuked",nuked,"file(s)")
-    print("And spared",skipped,"file(s)")
+    print("Out of those you",texter("nuked"),nuked,"file(s)")
+    print("And",texter("skipped"),skipped,"file(s)")
     print("----------\n")
     print("That's",str(size_m)+mettype,"of storage savings!")
     print("----------\n")
@@ -118,7 +130,7 @@ def player_call(files,direct):
 
 #The executive part
 def main():
-    global total, classic
+    global total, classic, nuked, skipped, size_m
     image=0
     syscall("cls")
     print("Hi there and welcome to:")
@@ -169,10 +181,11 @@ def main():
         print("It looks like the program was quit before you got through the directory")
         answer=input("Would you like to resume that list? Y/N\n")
         if answer in ("Y","y"):
-            filelistM=imaging.reader(direct+"/temp.list", filelist)
-            if type(filelistM) is bool: main()
-            total=total-(total-len(filelistM))      #Run recovery from temp.list
-            player_call(filelistM,direct)
+            filelistM,totalS,nuked,skipped,size_m,pointd=imaging.reader(direct+"/temp.list",filelist,True)
+            if type(filelistM) is bool: main()     #Run recovery from temp.list
+            if totalS==0: total=total-(total-len(filelistM))
+            else: total=totalS
+            player_call(filelistM,direct,pointd)
         elif answer in ("N", "n"):
             print("I cleaned up, sorry about the interruption\n")
             os.remove(direct+"/temp.list")
@@ -199,16 +212,16 @@ def main():
         if classic: classic_fault()
         filelistM=imaging.loader(filelist,direct)
         if filelistM==False:
-            player_call(filelist,direct)
+            player_call(filelist,direct,0)
         if len(filelistM)==0:
             syscall("cls")
             print("It looks like nothing was added since we imaged the directory. Let's call it a day\n\n")
             syscall("pause")
             quit()
         total=total-(total-len(filelistM))
-        player_call(filelistM,direct)
+        player_call(filelistM,direct,0)
     elif answer in ("S","s"):
-        player_call(filelist,direct)
+        player_call(filelist,direct,0)
     elif answer in ("Q","q"):
         print("Ok, quitting...")
         sleep(1)

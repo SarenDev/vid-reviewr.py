@@ -39,7 +39,7 @@ def clipper(direct):
 def formatter(direct):
     filelist=[]
     for item in os.listdir(direct):
-        if item.endswith(".mp4") or item.endswith(".mkv"):
+        if item.endswith(".mp4") or item.endswith(".mkv") or item.endswith(".mts") or item.endswith(".avi"):
             filelist.append(item)   #Only adding ".mp4" or ".mkv" files to the list
     return(filelist)
 
@@ -88,7 +88,7 @@ def player(origin,target,pointer,pointd):
     else:
         print(texter("unkerr"))
         sleep(1)
-        player(origin, target, pointer)
+        player(origin, target, pointer, pointd)
 
 #Runs the player through all the files and deals with statistics as well as a graceful exit
 def player_call(files,direct,pointd):

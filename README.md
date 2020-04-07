@@ -14,10 +14,10 @@ __*The script lets you go through the directory and choose which videos to leave
 
 **It might sound useful already, but wait - there are some extra features:**
 
+* *Stats*, to know what you deleted and how much space that saved
 * *Autosave*, so that progress isn't lost if the app quits, or you decide to take a break
 * *Manual save*, so that you don't have to go through a directory all over again; Instead, just look at the new files
 * *Somewhat useful script launcher*, for those who want to run it in Python and need a tip when setting up
-* *Review-and-edit-friendly code structure*, while not a feature per say it is just good organization
 * *Extra bits for code reviewers and regular users*, be on the lookout
 
 This is my first project in Python, so some things aren't as straight forward as they could be. Sorry if that's somehow dissapointing

@@ -1,7 +1,7 @@
 total=0
 nuked=0
 skipped=0
-size_m=0
+size_k=0
 classic=False
 import os
 import subprocess
@@ -45,7 +45,7 @@ def formatter(direct):
 
 #Plays and act on the files
 def player(origin,target,pointer,pointd):
-    global total, nuked, skipped, size_m
+    global total, nuked, skipped, size_k
     syscall("cls")
     if not os.path.exists(origin+"/"+target):
         print(texter("filemiss")+target)
@@ -57,12 +57,12 @@ def player(origin,target,pointer,pointd):
     answer = input("What would you like to do with this file?\n (D)elete | (S)kip | (R)eplay | (Q)uit\n")
     if answer in ("D", "d"):
         print("Deleted: "+target)
-        size_m+=round((os.stat(origin+"/"+target).st_size)/(1024 * 1024))
+        size_k+=(os.stat(origin+"/"+target).st_size)/1024
         if platform.system()=="Linux": send2trash(origin+"/"+target)
         else: send2trash(origin+"\\"+target)
         nuked+=1
         with open(origin+"/temp.stat", "w") as filehandle:
-            filehandle.write(str(total)+"\n"+str(nuked)+"\n"+str(skipped)+"\n"+str(size_m)+"\n")
+            filehandle.write(str(total)+"\n"+str(nuked)+"\n"+str(skipped)+"\n"+str(size_k)+"\n")
             filehandle.close()
         sleep(1)
         return
@@ -73,14 +73,14 @@ def player(origin,target,pointer,pointd):
             filehandle.close()
         skipped+=1
         with open(origin+"/temp.stat", "w") as filehandle:
-            filehandle.write(str(total)+"\n"+str(nuked)+"\n"+str(skipped)+"\n"+str(size_m)+"\n")
+            filehandle.write(str(total)+"\n"+str(nuked)+"\n"+str(skipped)+"\n"+str(size_k)+"\n")
             filehandle.close()
         sleep(1)
         return
     elif answer in ("R", "r"):
         print("Replaying: "+target)
         sleep(1)
-        player(origin, target, pointer)
+        player(origin, target, pointer, pointd)
     elif answer in ("Q", "q"):
         print("Ok, quitting...")
         sleep(1)
@@ -92,9 +92,9 @@ def player(origin,target,pointer,pointd):
 
 #Runs the player through all the files and deals with statistics as well as a graceful exit
 def player_call(files,direct,pointd):
-    global total, nuked, skipped, size_m
+    global total, nuked, skipped, size_k
     pointer=0
-    mettype="MB"
+    mettype="KB"
     for item in files:
         pointer+=1
         pointd+=1
@@ -107,12 +107,12 @@ def player_call(files,direct,pointd):
     except:pass
     try:os.remove(direct+"/temp.stat")
     except:pass
-    if size_m>1024: 
-        size_m=round(size_m/1024)
-        mettype="GB"
-        if size_m>1024:
-            size_m=round(size_m/1024)
-            mettype="TB"
+    if size_k>1024: 
+        size_k=size_k/1024
+        mettype="MB"
+        if size_k>1024:
+            size_k=size_k/1024
+            mettype="GB"
     print("You have reached the end of the directory, good job!")
     print("Let's look at some numbers:")
     print("----------\n")
@@ -121,7 +121,7 @@ def player_call(files,direct,pointd):
     print("Out of those you",texter("nuked"),nuked,"file(s)")
     print("And",texter("skipped"),skipped,"file(s)")
     print("----------\n")
-    print("That's",str(size_m)+mettype,"of storage savings!")
+    print("That's",str(round(size_k,2))+mettype,"of storage savings!")
     print("----------\n")
     try:imaging.imager(files,direct)
     except:pass
@@ -130,7 +130,7 @@ def player_call(files,direct,pointd):
 
 #The executive part
 def main():
-    global total, classic, nuked, skipped, size_m
+    global total, classic, nuked, skipped, size_k
     image=0
     syscall("cls")
     print("Hi there and welcome to:")
@@ -181,7 +181,7 @@ def main():
         print("It looks like the program was quit before you got through the directory")
         answer=input("Would you like to resume that list? Y/N\n")
         if answer in ("Y","y"):
-            filelistM,totalS,nuked,skipped,size_m,pointd=imaging.reader(direct+"/temp.list",filelist,True)
+            filelistM,totalS,nuked,skipped,size_k,pointd=imaging.reader(direct+"/temp.list",filelist,True)
             if type(filelistM) is bool: main()     #Run recovery from temp.list
             if totalS==0: total=total-(total-len(filelistM))
             else: total=totalS

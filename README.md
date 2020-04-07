@@ -20,15 +20,17 @@ __*The script lets you go through the directory and choose which videos to leave
 * *Somewhat useful script launcher*, for those who want to run it in Python and need a tip when setting up
 * *Extra bits for code reviewers and regular users*, be on the lookout
 
-This is my first project in Python, so some things aren't as straight forward as they could be. Sorry if that's somehow dissapointing
+We currently support ".mp4", ".mkv", ".mts" and ".avi" files
+
+This is my first project in Python, so some things aren't as straight forward as they could be. Sorry if that's somehow disappointing
 
 ### Critical requirements:
 This script relies on VLC being installed on your machine and being accessible from the command line 
 
-*(In Windows you have to set VLC's directory as an environmental path)*
+*(In Windows you have to set VLC's directory as an environmental path, so it's accessible from CMD)*
 
-As for running it in Python, you'll ~~obviously~~ need Python installed and working from the command line as well as making sure Pip works too. The script uses the "send2trash" module so getting that out of the way will also be important.
+As for running it in Python, you'll ~~obviously~~ need Python installed and working from the command line as well as making sure Pip works too. The script uses the "send2trash" module, so getting that out of the way will also be necessary.
 
 ### For potential contributors or those who want to live on the edge:
-Simply clone, fork or warily observe the "beta-bekr" branch. If it gets too unstable for you, fall back to the safety of "master"
+Simply clone, fork, or warily observe the "beta-bekr" branch. If it gets too unstable for you, fall back to the safety of "master"
 *If "beta-bekr is missing, nothing new is brewin' so just use good-ole "master"*

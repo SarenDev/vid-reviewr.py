@@ -17,10 +17,10 @@ def syscall(cause):
 
 def credts():
     lines = ["That one script that let's you review videos",
-         "Written, concepted, tested by:",
+         "Concepted, written and tested by:",
          "Saren Dev - https://github.com/SarenDev",
          "---AND---",
-         'Proudly optimized by the "one and only":',
+         'Proudly optimized by "the one and only":',
          "TrackLab - https://github.com/TrackLab",
          "---FINALLY---",
          "Checked out and maybe improved by...",
@@ -49,10 +49,19 @@ def texter(text):
 
     uns_no=["I didn't understand that, but I'll take it as a NO\n", "I might need a bit to decode that, but for now let's say it's a NO\n"]
 
+    total=["looked at", "observed", "studied", "interrogated", "went through", "indexed", "checked", "noted down", "viewed"]
+
+    nuked=["nuked", "obliterated", "decemated", "locked up", "snipped", "shredded", "totaled", "disintegrated", "zeroed"]
+
+    skipped=["spared", "left be", "skipped", "saved", "archived", "kept", "salvaged", "left out", "greenlit"]
+
     if text=="credits": return(credts())
     if text=="incomp": return(incomp)
     if text=="unkerr": active=unkerr
     if text=="filemiss": active=filemiss
     if text=="uns_yes": active=uns_yes
     if text=="uns_no": active=uns_no
+    if text=="total": active=total
+    if text=="nuked": active=nuked
+    if text=="skipped": active=skipped
     return(active[random.randint(0,(len(active)-1))])

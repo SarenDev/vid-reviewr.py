@@ -21,23 +21,40 @@ def imager(filelist,direct):
     return
 
 #Reads an image
-def reader(path,filelist):
+def reader(path,filelist,temp_stat):
     outlist=[]
     imglist=[]
+    total=nuked=skipped=size_m=pointd=0
     umcheck=len(filelist)
     if not os.path.exists(path):
           print(texter("filemiss")+path+"\n")
           syscall("pause")
+          if temp_stat: return(False,False,False,False,False)
           return(False)
     with open(path,"r") as filehandle:      #Read the selected file into list
-        for line in filehandle:
-            pointer=line[:-1]
-            imglist.append(pointer)  
+        imglist=filehandle.read().splitlines()
+        filehandle.close()
     for item in filelist:
         if item in imglist:                #Compare and create new list, preforms an integrity check
             umcheck-=1
             pass
         else: outlist.append(item)
+    if temp_stat: #Read stat file
+        path_stat=path[:-4]+"stat"
+        if not os.path.exists(path_stat):
+            print("We couldn't find a stat file, so we'll ignore it...")
+            total=nuked=skipped=size_m=0
+            temp_stat=False
+        if temp_stat:
+            with open(path_stat, "r") as filehandle:
+                line=filehandle.read().splitlines()
+                total=int(line[0])
+                nuked=int(line[1])
+                skipped=int(line[2])
+                size_m=int(line[3])
+                pointd=int(line[4])
+                filehandle.close
+        temp_stat=True
     print("Image read!\n\n")
     if umcheck==len(filelist):
         if path.endswith("temp.list"):
@@ -46,7 +63,9 @@ def reader(path,filelist):
             print("We'll clean up and restart\n")
             syscall("pause")
             os.remove(path)
-            return(False)
+            try:os.remove(path[:-4]+"stat")
+            except:pass
+            return(False,False,False,False,False)
         print("----------\n")
         print("This is bad...\n"+"The image you loaded failed our integrity check\n")
         print("It could be that the file you're using is unbelievably old, came from another directory or is corrupted\n")
@@ -71,6 +90,7 @@ def reader(path,filelist):
             syscall("pause")
             return(False)
     sleep(1)
+    if temp_stat: return(outlist,total,nuked,skipped,size_m,pointd)
     return(outlist)
 
 #Finds images for use

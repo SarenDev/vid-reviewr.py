@@ -3,6 +3,7 @@ nuked=0
 skipped=0
 size_k=0
 classic=False
+
 import os
 import subprocess
 import platform
@@ -19,6 +20,7 @@ except:
 try: from features import imaging
 except: classic=True
 
+#Error sting for bad keypress in Classic Mode
 def classic_fault():
     syscall("cls")
     print("This feature isn't available in classic mode, sorry")
@@ -40,7 +42,7 @@ def formatter(direct):
     filelist=[]
     for item in os.listdir(direct):
         if item.endswith(".mp4") or item.endswith(".mkv") or item.endswith(".mts") or item.endswith(".avi"):
-            filelist.append(item)   #Only adding ".mp4" or ".mkv" files to the list
+            filelist.append(item)   #Only adding supported files to the list
     return(filelist)
 
 #Plays and act on the files
@@ -52,7 +54,7 @@ def player(origin,target,pointer,pointd):
         sleep(1)
         return
     print ("Playing: "+target+" ||",pointd,"/",total)
-    command= 'vlc --quiet --sout-all --sout "#display"' + ' "' + origin + '/' + target + '"'
+    command= 'vlc --quiet --sout-all --sout "#display"' + ' "' + origin + '/' + target + '"'    #Running VLC with the file and all audio channels
     subprocess.call(command, shell=True, stdout=open(os.devnull,"w"), stderr=subprocess.STDOUT)
     answer = input("What would you like to do with this file?\n (D)elete | (S)kip | (R)eplay | (Q)uit\n")
     if answer in ("D", "d"):
@@ -105,7 +107,7 @@ def player_call(files,direct,pointd):
     syscall("cls")
     try:os.remove(direct+"/temp.list")
     except:pass
-    try:os.remove(direct+"/temp.stat")
+    try:os.remove(direct+"/temp.stat")  #Cleaning up temps and converting data values
     except:pass
     if size_k>1024: 
         size_k=size_k/1024
@@ -139,6 +141,7 @@ def main():
         with open("features/boot.artwork","r") as filehandle: 
             print(filehandle.read(), "\n")
             filehandle.close()
+    print("-----NOW A FINALIZED V2.0-----\n\n")
     if classic: 
         print("-"*27)
         print("Now running in CLASSIC MODE")
@@ -158,7 +161,7 @@ def main():
         main()
     print("Let's look at "+direct)
     print("-"*(14+len(direct)))
-    filelist=formatter(direct)
+    filelist=formatter(direct)      #Preparing the file list and informing user
     total=len(filelist)
     if total==0:
         print("It doesn't have any videos I can work with")
@@ -171,7 +174,7 @@ def main():
         if (item.endswith(".list") and not item.startswith("temp")): image+=1
     if image!=0:
         print("It also conatins",image,"image(s) that you can load\n")
-        print("-"*(44+len(str(image))))
+        print("-"*(44+len(str(image))))     #Count images
     else: print("-"*(21+len(str(image))))
     if os.path.exists(direct+"/temp.list"):
         if classic:

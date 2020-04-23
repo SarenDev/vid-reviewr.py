@@ -24,7 +24,7 @@ def imager(filelist,direct):
 def reader(path,filelist,temp_stat):
     outlist=[]
     imglist=[]
-    total=nuked=skipped=size_m=pointd=0
+    total=nuked=skipped=size_k=pointd=0
     umcheck=len(filelist)
     if not os.path.exists(path):
           print(texter("filemiss")+path+"\n")
@@ -43,7 +43,7 @@ def reader(path,filelist,temp_stat):
         path_stat=path[:-4]+"stat"
         if not os.path.exists(path_stat):
             print("We couldn't find a stat file, so we'll ignore it...")
-            total=nuked=skipped=size_m=0
+            total=nuked=skipped=size_k=0
             temp_stat=False
         if temp_stat:
             with open(path_stat, "r") as filehandle:
@@ -51,7 +51,7 @@ def reader(path,filelist,temp_stat):
                 total=int(line[0])
                 nuked=int(line[1])
                 skipped=int(line[2])
-                size_m=int(line[3])
+                size_k=int(line[3])
                 pointd=int(line[4])
                 filehandle.close
         temp_stat=True
@@ -90,7 +90,7 @@ def reader(path,filelist,temp_stat):
             syscall("pause")
             return(False)
     sleep(1)
-    if temp_stat: return(outlist,total,nuked,skipped,size_m,pointd)
+    if temp_stat: return(outlist,total,nuked,skipped,size_k,pointd)
     return(outlist)
 
 #Finds images for use
@@ -121,7 +121,7 @@ def loader(filelist,direct):
         loader(filelist,direct)
     answer=input("What would you like to do with the image "+listlist[select]+"? (U)se or (D)elete\n")
     if answer in ("U", "u"):
-        outlist=reader(path,filelist) #Calls to read the image
+        outlist=reader(path,filelist,False) #Calls to read the image
         return outlist
     elif answer in ("D", "d"):
         os.remove(path)

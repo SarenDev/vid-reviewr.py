@@ -125,7 +125,7 @@ def player_call(files,direct,pointd):
     print("----------\n")
     print("That's",str(round(size_k,2))+mettype,"of storage savings!")
     print("----------\n")
-    try:imaging.imager(files,direct)
+    try:imaging.imager(formatter(direct),direct)
     except:pass
     syscall("pause")
     quit()

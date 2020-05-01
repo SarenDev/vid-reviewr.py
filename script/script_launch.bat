@@ -1,5 +1,4 @@
 @echo off
-chcp 65001 > NUL
 echo Testing for VLC, Python, Pip and it's imports
 timeout /t 1 > NUL
 cls
@@ -12,7 +11,7 @@ where vlc > NUL
 if NOT ERRORLEVEL 1 (
 	cls
 	ver > NUL
-	echo ✓ VLC
+	echo + VLC
 	echo ? Python
 	echo * ? Pip
 	echo ** ? "send2trash" Module
@@ -21,8 +20,8 @@ if NOT ERRORLEVEL 1 (
 	if NOT ERRORLEVEL 1 (
 		cls
 		ver > NUL
-		echo ✓ VLC
-		echo ✓ Python
+		echo + VLC
+		echo + Python
 		echo * ? Pip
 		echo ** ? "send2trash" Module
 		echo.
@@ -30,19 +29,19 @@ if NOT ERRORLEVEL 1 (
 		if NOT ERRORLEVEL 1 (
 			cls
 			ver > NUL
-			echo ✓ VLC
-			echo ✓ Python
-			echo * ✓ Pip
+			echo + VLC
+			echo + Python
+			echo * + Pip
 			echo ** ? "send2trash" Module
 			echo.
 			pip search send2trash | findstr INSTALLED > NUL
 			if NOT ERRORLEVEL 1 (
 				cls
 				color 02
-				echo ✓ VLC
-				echo ✓ Python
-				echo * ✓ Pip
-				echo ** ✓ "send2trash" Module
+				echo + VLC
+				echo + Python
+				echo * + Pip
+				echo ** + "send2trash" Module
 				echo.
 				echo Everything seems in order, running script and closing this window in a bit
 				start python vid-reviewr.py
@@ -53,9 +52,9 @@ if NOT ERRORLEVEL 1 (
 			color C
 			echo !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			echo.
-			echo ✓ VLC
-			echo ✓ Python
-			echo * ✓ Pip
+			echo + VLC
+			echo + Python
+			echo * + Pip
 			echo ** X "send2trash" Module
 			echo.
 			echo Something went wrong when testing for the "Send2Trash" module. It's possible you're missing it.
@@ -71,8 +70,8 @@ if NOT ERRORLEVEL 1 (
 		color C
 		echo !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		echo.
-		echo ✓ VLC
-		echo ✓ Python
+		echo + VLC
+		echo + Python
 		echo * X Pip
 		echo ** ? "send2trash" Module
 		echo.
@@ -89,7 +88,7 @@ if NOT ERRORLEVEL 1 (
 	color C
 	echo !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	echo.
-	echo ✓ VLC
+	echo + VLC
 	echo X Python
 	echo * ? Pip
 	echo ** ? "send2trash" Module

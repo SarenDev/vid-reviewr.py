@@ -51,7 +51,7 @@ def reader(path,filelist,temp_stat):
                 total=int(line[0])
                 nuked=int(line[1])
                 skipped=int(line[2])
-                size_k=int(line[3])
+                size_k=float(line[3])
                 pointd=int(line[4])
                 filehandle.close
         temp_stat=True

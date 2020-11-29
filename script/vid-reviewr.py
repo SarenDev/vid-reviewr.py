@@ -14,13 +14,13 @@ except:
     print("I'm sorry, we can't continue...")
     print("'vid-reviewr.py' is designed to be somewhat modular, but this is a bit much")
     print("The '/features' directory needs to contain 'backstrings.py' for the script to run")
-    print("Since without the script will crash, we have to quit right now")
+    print("Since without it the script will crash, we have to quit right now")
     sleep(10)
     quit()
 try: from features import imaging
 except: classic=True
 
-#Error sting for bad keypress in Classic Mode
+#Error string for bad keypress in Classic Mode
 def classic_fault():
     syscall("cls")
     print("This feature isn't available in classic mode, sorry")
@@ -41,7 +41,7 @@ def clipper(direct):
 def formatter(direct):
     filelist=[]
     for item in os.listdir(direct):
-        if item.endswith(".mp4") or item.endswith(".mkv") or item.endswith(".mts") or item.endswith(".avi"):
+        if item.endswith((".mp4",".mkv",".mts",".avi")):
             filelist.append(item)   #Only adding supported files to the list
     return(filelist)
 
@@ -101,7 +101,7 @@ def player_call(files,direct,pointd):
         pointer+=1
         pointd+=1
         player(direct, item, pointer, pointd)
-        with open(direct+"/temp.stat", "a") as filehandle: #Calling player, while passing display values loaded from file (if it happened)
+        with open(direct+"/temp.stat", "a") as filehandle: #Calling player, while passing display values loaded from file (if they exist)
             filehandle.write(str(pointd))
             filehandle.close()
     syscall("cls")

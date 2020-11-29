@@ -6,7 +6,6 @@ from .backstrings import texter,syscall
 #Images the file list in its current state
 def imager(filelist,direct):
     print("----------\n")
-    print("The purpose of this feature is to image a directory, so you don't have to go through all of it again at a later date\n")
     pathway = direct+"/Full_Image-"+str(datetime.date(datetime.now()))+".list"
     if os.path.exists(pathway):
         answer=input("It looks like you already created an image today, would you like to overwrite it? Y/N\n")
@@ -17,7 +16,7 @@ def imager(filelist,direct):
     with open(pathway, "w") as filehandle:
         for item in filelist:
             filehandle.write(item+"\n")
-    print("We wrote an image into the file: "+pathway+"\n")
+    print("We wrote an image (directory snapshot) into the file: "+pathway+"\n")
     return
 
 #Reads an image
@@ -30,7 +29,7 @@ def reader(path,filelist,temp_stat):
           print(texter("filemiss")+path+"\n")
           syscall("pause")
           if temp_stat: return(False,False,False,False,False)
-          return(False)
+          return(False, [])
     with open(path,"r") as filehandle:      #Read the selected file into list
         imglist=filehandle.read().splitlines()
         filehandle.close()
@@ -72,7 +71,7 @@ def reader(path,filelist,temp_stat):
         print("Are you sure you want to continue with this image file? If you do - you might have to go through some files again. Y/N\n")
         print("----------\n")
         answer=input()
-        if answer in ("Y","y"): return(True)
+        if answer in ("Y","y"): return(True,[])
         elif answer in ("N","n"):
             answer=input("Would you like us to delete this file and quit? Y/N\n")
             if answer in ("Y", "y"):
@@ -80,18 +79,18 @@ def reader(path,filelist,temp_stat):
                 os.remove(path)
                 sleep(1)
                 quit()
-            elif answer in ("N", "n"): return(False)
+            elif answer in ("N", "n"): return(False,[])
             else:
                 print(texter("uns_no"))
                 syscall("pause")
-                return(False)
+                return(False,[])
         else:
             print(texter("uns_no"))
             syscall("pause")
-            return(False)
+            return(False,[])
     sleep(1)
     if temp_stat: return(outlist,total,nuked,skipped,size_k,pointd)
-    return(outlist)
+    return(outlist, imglist)
 
 #Finds images for use
 def loader(filelist,direct):
@@ -121,7 +120,12 @@ def loader(filelist,direct):
         loader(filelist,direct)
     answer=input("What would you like to do with the image "+listlist[select]+"? (U)se or (D)elete\n")
     if answer in ("U", "u"):
-        outlist=reader(path,filelist,False) #Calls to read the image
+        outlist,inlist=reader(path,filelist,False) #Calls to read the image
+        if inlist!=[]:
+            with open(direct+"/temp.list", "w") as filehandle:
+                for item in inlist:
+                    filehandle.write(item+"\n")
+                filehandle.close()
         return outlist
     elif answer in ("D", "d"):
         os.remove(path)

@@ -34,7 +34,7 @@ if NOT ERRORLEVEL 1 (
 			echo * + Pip
 			echo ** ? "send2trash" Module
 			echo.
-			pip search send2trash | findstr INSTALLED > NUL
+			pip list | findstr Send2Trash > NUL
 			if NOT ERRORLEVEL 1 (
 				cls
 				color 02

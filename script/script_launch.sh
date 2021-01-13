@@ -25,7 +25,7 @@ if hash vlc 2>/dev/null; then
 			printf "✓ Python\n"
 			printf "* ✓ Pip\n"
 			printf "** ? 'send2trash' Module\n"
-			if pip3 search send2trash | grep -q 'INSTALLED'; then
+			if pip3 list | grep -q 'Send2Trash'; then
 				clear
 				printf "✓ VLC\n"
 				printf "✓ Python\n"

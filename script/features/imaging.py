@@ -1,138 +1,236 @@
-from datetime import datetime
 import os
+import sys
+from datetime import datetime
 from time import sleep
-from .backstrings import texter,syscall
 
-#Images the file list in its current state
-def imager(filelist,direct):
+import features.backstrings as backs
+
+
+def imager(video_list: list[str], target_dir: str):
+    """
+    Create an image of all video files in a directory
+
+    Args:
+        video_list (list[str]): List of all video file names
+        target_dir (str): Directory path in which to save the image
+    """
     print("----------\n")
-    pathway = direct+"/Full_Image-"+str(datetime.date(datetime.now()))+".list"
-    if os.path.exists(pathway):
-        answer=input("It looks like you already created an image today, would you like to overwrite it? Y/N\n")
-        if answer in ("Y", "y"): pass
-        else: 
+    target_image = (
+        target_dir + "/Full_Image-" + str(datetime.date(datetime.now())) + ".list"
+    )
+    if os.path.exists(target_image):
+        print("It looks like you already created an image today.")
+        if input("Would you like to overwrite it? y/N\n").lower() != "y":
             print("Ok, not overwriting anything...\n")
             return
-    with open(pathway, "w") as filehandle:
-        for item in filelist:
-            filehandle.write(item+"\n")
-    print("We wrote an image (directory snapshot) into the file: "+pathway+"\n")
-    return
+    with open(target_image, "w", encoding="utf-8") as filehandle:
+        for item in video_list:
+            filehandle.write(item + "\n")
+    print(
+        "We wrote an image (directory snapshot) into the file: " + target_image + "\n"
+    )
 
-#Reads an image
-def reader(path,filelist,temp_stat):
-    outlist=[]
-    imglist=[]
-    total=nuked=skipped=size_k=pointd=0
-    umcheck=len(filelist)
-    if not os.path.exists(path):
-          print(texter("filemiss")+path+"\n")
-          syscall("pause")
-          if temp_stat: return(False,False,False,False,False)
-          return(False, [])
-    with open(path,"r") as filehandle:      #Read the selected file into list
-        imglist=filehandle.read().splitlines()
-        filehandle.close()
-    for item in filelist:
-        if item in imglist:                #Compare and create new list, preforms an integrity check
-            umcheck-=1
-            pass
-        else: outlist.append(item)
-    if temp_stat: #Read stat file
-        path_stat=path[:-4]+"stat"
+
+# Reads an image
+def reader(
+    target_dir: str, video_files: list[str], temp_stat: bool
+) -> tuple[list[str], list[str], int, int, int, int, int]:
+    """
+    _summary_
+
+    Args:
+        target_dir (str): Video directory path
+        video_files (list[str]): List of video files in the dir
+        temp_stat (bool): Load temporary stats
+
+    Returns:
+        tuple[list[str], list[str], int, int, int, int, int]: new_files, old_files, total, nuked, skipped, size_k, starting_file_idx
+    """
+    new_files = []
+    old_files = []
+    total = nuked = skipped = size_k = starting_file_idx = 0
+    target_dir_len = len(video_files)
+
+    if not os.path.exists(target_dir):
+        print(backs.texter("filemiss") + target_dir + "\n")
+        backs.syscall(backs.TerminalCalls.PAUSE)
+        if temp_stat:
+            return (None, None, 0, 0, 0, 0, 0)
+        return (None, None, 0, 0, 0, 0, 0)
+
+    with open(
+        target_dir, "r", encoding="utf-8"
+    ) as filehandle:  # Read the selected file into list
+        old_files = filehandle.read().splitlines()
+
+    # Compare and create new list of files not in the image
+    # Also used to perform an integrity check using the number of matches
+    for item in video_files:
+        if item in old_files:
+            target_dir_len -= 1
+        else:
+            new_files.append(item)
+
+    if temp_stat:  # Read stat file
+        path_stat = target_dir[:-4] + "stat"
         if not os.path.exists(path_stat):
             print("We couldn't find a stat file, so we'll ignore it...")
-            total=nuked=skipped=size_k=0
-            temp_stat=False
-        if temp_stat:
-            with open(path_stat, "r") as filehandle:
-                line=filehandle.read().splitlines()
-                total=int(line[0])
-                nuked=int(line[1])
-                skipped=int(line[2])
-                size_k=float(line[3])
-                pointd=int(line[4])
-                filehandle.close
-        temp_stat=True
-    print("Image read!\n\n")
-    if umcheck==len(filelist):
-        if path.endswith("temp.list"):
-            print("----------\n")
-            print("This is bad, the autosave image we made failed our integrity check\n")
-            print("We'll clean up and restart\n")
-            syscall("pause")
-            os.remove(path)
-            try:os.remove(path[:-4]+"stat")
-            except:pass
-            return(False,False,False,False,False)
-        print("----------\n")
-        print("This is bad...\n"+"The image you loaded failed our integrity check\n")
-        print("It could be that the file you're using is unbelievably old, came from another directory or is corrupted\n")
-        print("Are you sure you want to continue with this image file? If you do - you might have to go through some files again. Y/N\n")
-        print("----------\n")
-        answer=input()
-        if answer in ("Y","y"): return(True,[])
-        elif answer in ("N","n"):
-            answer=input("Would you like us to delete this file and quit? Y/N\n")
-            if answer in ("Y", "y"):
-                print("Ok, nuking and quitting...")
-                os.remove(path)
-                sleep(1)
-                quit()
-            elif answer in ("N", "n"): return(False,[])
-            else:
-                print(texter("uns_no"))
-                syscall("pause")
-                return(False,[])
+            total = nuked = skipped = size_k = 0
+            temp_stat = False
         else:
-            print(texter("uns_no"))
-            syscall("pause")
-            return(False,[])
-    sleep(1)
-    if temp_stat: return(outlist,total,nuked,skipped,size_k,pointd)
-    return(outlist, imglist)
+            with open(path_stat, "r", encoding="utf-8") as filehandle:
+                line = filehandle.read().splitlines()
+                total = int(line[0])
+                nuked = int(line[1])
+                skipped = int(line[2])
+                size_k = float(line[3])
+                starting_file_idx = int(line[4])
 
-#Finds images for use
-def loader(filelist,direct):
-    listlist={}
-    lcheck=0
-    syscall("cls")
-    for item in os.listdir(direct):
+    print("Image read!\n\n")
+
+    # Image integrity check by seeing if any files matched the image
+    if target_dir_len == len(video_files):
+        if target_dir.endswith("temp.list"):
+            print("----------\n")
+            print(
+                "This is bad, the autosave image we made failed our integrity check\n"
+            )
+            print("We'll clean up and restart\n")
+            backs.syscall(backs.TerminalCalls.PAUSE)
+            os.remove(target_dir)
+            try:
+                os.remove(target_dir[:-4] + "stat")
+            except FileNotFoundError:
+                pass
+            return (None, None, 0, 0, 0, 0, 0)
+
+        print("----------\n")
+        print("This is bad... The image you loaded failed our integrity check")
+        print(
+            "It could be the file you're using is unbelievably old, came from another directory, or is corrupted"
+        )
+        print("Are you sure you want to continue with this image file? y/N")
+        print("If you do - you might have to go through some files again. \n")
+        print("----------\n")
+        answer = input().lower()
+        if answer == "y":
+            return (new_files, [], 0, 0, 0, 0, 0)
+        if answer == "n":
+            answer = input(
+                "Would you like us to delete this file and quit? y/N\n"
+            ).lower()
+            if answer == "y":
+                print("Ok, nuking and quitting...")
+                os.remove(target_dir)
+                sleep(1)
+                sys.exit()
+            else:
+                return (None, None, 0, 0, 0, 0, 0)
+        else:
+            return (None, None, 0, 0, 0, 0, 0)
+    sleep(1)
+    if temp_stat:
+        return (new_files, old_files, total, nuked, skipped, size_k, starting_file_idx)
+    return (new_files, old_files, 0, 0, 0, 0, 0)
+
+
+def loader(file_list: list[str], target_dir: str) -> list[str]:
+    """
+    Finds, lists, and loads a full image file from a directory
+
+    Args:
+        file_list (list[str]): List of all files in the directory
+        target_dir (str): Target directory, used to complete a full image path
+
+    Returns:
+        list[str]: List of new files after image loading
+    """
+    images = []
+    backs.syscall(backs.TerminalCalls.CLEAR)
+
+    for item in os.listdir(target_dir):
         if item.endswith(".list"):
-            listlist.update({lcheck:item})  #Look for image files and add them to dictionary
-            lcheck+=1
-    if lcheck==0:
-        print("The directory doesn't appear to contain a '.list' image file, you might want to find or create one before running this\n")
-        if input("Would you like to create one now? Y/N\n") in ("Y", "y"):
-            imager(filelist,direct)
-            syscall("pause")
-            quit()
-    print("Please choose an image file from the list bellow (or type 'Q' if you changed your mind):\n")
-    print(listlist)
-    select=input()
-    if select in ("Q", "q"): quit()
-    try:
-        select=int(select)
-        path=direct+"/"+listlist[select]   
-    except: 
-        print("It looks like you selected an invalid image, please try again after we trip a quick restart\n")
-        syscall("pause")
-        loader(filelist,direct)
-    answer=input("What would you like to do with the image "+listlist[select]+"? (U)se or (D)elete\n")
-    if answer in ("U", "u"):
-        outlist,inlist=reader(path,filelist,False) #Calls to read the image
-        if inlist!=[]:
-            with open(direct+"/temp.list", "w") as filehandle:
-                for item in inlist:
-                    filehandle.write(item+"\n")
-                filehandle.close()
-        return outlist
-    elif answer in ("D", "d"):
-        os.remove(path)
-        print("Erased",listlist[select],"\n")
-        syscall("pause")
-        quit()
+            images.append(item)  # Look for image files and add them to dictionary
+
+    if len(images) == 0:
+        print("The directory doesn't appear to contain a '.list' image file.")
+        print("you might want to find or create one before running this.")
+        if input("Would you like to create one now? Y/N\n").lower() == "y":
+            imager(file_list, target_dir)
+            backs.syscall(backs.TerminalCalls.PAUSE)
+            sys.exit()
+
+    target_image = ""
+    while target_image == "":
+        print(
+            "Please choose an image file from the list bellow (or type 'Q' if you changed your mind):"
+        )
+        for image in images:
+            print(images.index(image), ":", image)
+        print("\n")
+
+        select = input().lower()
+        if select == "q":
+            return None
+        try:
+            target_image = target_dir + "/" + images[int(select)]
+        except (IndexError, ValueError):
+            print("It looks like you selected an invalid image, please try again\n")
+            backs.syscall(backs.TerminalCalls.PAUSE)
+    while True:
+        answer = input(
+            "What would you like to do with the image "
+            + target_image
+            + "? (U)se or (D)elete\n"
+        ).lower()
+
+        if answer == "u":
+            new_files, old_files, _, _, _, _, _ = reader(
+                target_image, file_list, False
+            )  # Calls to read the image
+            if old_files != []:
+                with open(
+                    target_dir + "/temp.list", "w", encoding="utf-8"
+                ) as filehandle:
+                    for item in old_files:
+                        filehandle.write(item + "\n")
+            return new_files
+        if answer == "d":
+            os.remove(target_image)
+            print("Erased", target_image, "\n")
+            backs.syscall(backs.TerminalCalls.PAUSE)
+            sys.exit()
+        else:
+            print(backs.texter("unkerr"))
+
+
+def read_temp_image(
+    target_dir: str, file_list: list[str]
+) -> tuple[list[str], int, int, int, int, int]:
+    """
+    Read a temp image file
+
+    Args:
+        target_dir (str): Path of the video dir
+        file_list (list[str]): List of video files in the dir
+
+    Returns:
+        tuple[list[str], int, int, int, int, int]: new_files, total, nuked, skipped, size_k, starting_file_idx
+    """
+    print("It looks like the program was quit before you got through the directory")
+    if input("Would you like to resume that list? Y/n\n").lower() == "n":
+        print("I cleaned up, sorry about the interruption\n")
+        os.remove(target_dir + "/temp.list")
+        print("-" * 43)
+        return (None, None, None, None, None, None)
+    total = len(file_list)
+    remaining_videos, _, totalS, nuked, skipped, size_k, starting_file_idx = reader(
+        target_dir + "/temp.list", file_list, True
+    )
+    if remaining_videos is None:
+        return (None, None, None, None, None, None)
+    if totalS == 0:
+        total = total - (total - len(remaining_videos))
     else:
-        print(texter("unkerr"))
-        syscall("pause")
-        loader(filelist,direct)
+        total = totalS
+    return (remaining_videos, total, nuked, skipped, size_k, starting_file_idx)

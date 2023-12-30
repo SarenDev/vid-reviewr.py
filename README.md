@@ -1,4 +1,6 @@
-```
+# vid-reviewr.py
+
+```text
        _     _                           _                                      
       (_)   | |                         (_)                                     
 __   ___  __| |  ______   _ __ _____   ___  _____      ___ __       _ __  _   _ 
@@ -8,7 +10,6 @@ __   ___  __| |  ______   _ __ _____   ___  _____      ___ __       _ __  _   _
                                                                    | |     __/ |
                                                                    |_|    |___/ 
 ```
-## vid-reviewr.py
 
 __*The script lets you go through the directory and choose which videos to leave or delete.*__
 
@@ -22,15 +23,16 @@ __*The script lets you go through the directory and choose which videos to leave
 
 We currently support ".mp4", ".mkv", ".mts" and ".avi" files
 
-This is my first project in Python, so some things aren't as straight forward as they could be. Sorry if that's somehow disappointing
+> This script is also designed to handle video files that have multiple audio tracks, like those produced by screen recording software.
 
-### Critical requirements:
-This script relies on VLC being installed on your machine and being accessible from the command line 
+This was my first python project, so the older commits look really *really* bad. I came back ~4 years later to improve it, because I still use this script regularly and thought it needed a tuneup.
+
+**Original script built for Python 3.8, rewritten for Python 3.11**
+
+## System requirements
+
+This script relies on VLC being installed on your machine and being accessible from the command line
 
 *(In Windows you have to set VLC's directory as an environmental path, so it's accessible from CMD)*
 
 As for running it in Python, you'll ~~obviously~~ need Python installed and working from the command line as well as making sure Pip works too. The script uses the "send2trash" module, so getting that out of the way will also be necessary.
-
-### For potential contributors or those who want to live on the edge:
-Simply clone, fork, or warily observe the "beta-bekr" branch. If it gets too unstable for you, fall back to the safety of "master"
-*If "beta-bekr is missing, nothing new is brewin' so just use good-ole "master"*

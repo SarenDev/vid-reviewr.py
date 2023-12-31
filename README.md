@@ -18,12 +18,14 @@ __*The script lets you go through the directory and choose which videos to leave
 * *Stats*, to know what you deleted and how much space that saved
 * *Autosave*, so that progress isn't lost if the app quits, or you decide to take a break
 * *Manual save*, so that you don't have to go through a directory all over again; Instead, just look at the new files
-* *Somewhat useful script launcher*, for those who want to run it in Python and need a tip when setting up
+<!-- * *Somewhat useful script launcher*, for those who want to run it in Python and need a tip when setting up -->
 * *Extra bits for code reviewers and regular users*, be on the lookout
 
 We currently support ".mp4", ".mkv", ".mts" and ".avi" files
 
 > This script is also designed to handle video files that have multiple audio tracks, like those produced by screen recording software.
+>
+> The script can handle dual-track, dual-file recordings like those produced by AMD Adrenalin. It currently searches for ".m4a" companion files.
 
 This was my first python project, so the older commits look really *really* bad. I came back ~4 years later to improve it, because I still use this script regularly and thought it needed a tuneup.
 

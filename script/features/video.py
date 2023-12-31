@@ -2,6 +2,7 @@ import os
 import subprocess
 import platform
 import sys
+import re
 from time import sleep
 from send2trash import send2trash
 
@@ -29,23 +30,34 @@ def player(target_dir: str, target_file: str, total: int, current_file_num: int)
             print(backs.texter("filemiss") + target_file)
             sleep(1)
             return -1
-        print("Playing: " + target_file + " ||", current_file_num, "/", total)
+
         program = "vlc"
         if platform.system() == "Darwin":
             program = "/Applications/VLC.app/Contents/MacOS/VLC"
+
         command = (
-            program
-            + " --quiet"
-            + " --sout-all"
-            + " --sout"
-            + ' "#display"'
-            + ' "'
-            + target_dir
-            + "/"
-            + target_file
-            + '"'
+            program + " --quiet" + " --sout-all" + " --sout" + ' "#display" '
         )  # Running VLC with the file and all audio channels
-        subprocess.run(command, shell=True, check=True)
+
+        # Check if a companion M4A file with the same name exists and play it if present
+        # Used to review dual-file dual-track recordings, e.g. Adrenalin
+        potential_audio_file = (
+            target_dir + "/" + re.split(r"\.[a-zA-z1-9]{3}\Z", target_file)[0] + ".m4a"
+        )
+        if os.path.exists(potential_audio_file):
+            command += "--input-slave=" + potential_audio_file
+
+        command += ' "' + target_dir + "/" + target_file + '"'
+
+        print("Playing: " + target_file + " ||", current_file_num, "/", total)
+
+        subprocess.run(
+            command,
+            shell=True,
+            check=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
         print("What would you like to do with this file?")
         match (input("(D)elete | (S)kip | (R)eplay | (Q)uit\n").lower()):
             case "d":

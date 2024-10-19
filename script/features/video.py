@@ -1,13 +1,13 @@
 import os
-import subprocess
 import platform
-import sys
 import re
+import subprocess
+import sys
 from time import sleep
-from send2trash import send2trash
 
 import features.backstrings as backs
 from features import imaging
+from send2trash import send2trash
 
 
 # Plays and act on the files
@@ -45,7 +45,7 @@ def player(target_dir: str, target_file: str, total: int, current_file_num: int)
             target_dir + "/" + re.split(r"\.[a-zA-z1-9]{3}\Z", target_file)[0] + ".m4a"
         )
         if os.path.exists(potential_audio_file):
-            command += "--input-slave=" + potential_audio_file
+            command += '--input-slave="' + potential_audio_file + '"'
 
         command += ' "' + target_dir + "/" + target_file + '"'
 
@@ -59,7 +59,7 @@ def player(target_dir: str, target_file: str, total: int, current_file_num: int)
             stderr=subprocess.DEVNULL,
         )
         print("What would you like to do with this file?")
-        match (input("(D)elete | (S)kip | (R)eplay | (Q)uit\n").lower()):
+        match input("(D)elete | (S)kip | (R)eplay | (Q)uit\n").lower():
             case "d":
                 print("Deleted: " + target_file)
                 size_k = (os.stat(target_dir + "/" + target_file).st_size) / 1024
